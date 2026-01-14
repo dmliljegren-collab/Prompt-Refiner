@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prompt Refinery</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="hero__text">
+          <p class="eyebrow">Prompt Refinery</p>
+          <h1>Prompts, refined to feel effortless.</h1>
+          <p class="lead">
+            Turn rough ideas into clean, precise prompts tuned to your tone and audience.
+          </p>
+        </div>
+      </section>
+
+      <section class="tool">
+        <form class="tool__form" action="/refine" method="post">
+          <div class="mode-switch">
+            <label>
+              <input
+                type="radio"
+                name="mode"
+                value="refine"
+                {% if not inputs or inputs.mode == 'refine' %}checked{% endif %}
+              />
+              Refine
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="mode"
+                value="generate"
+                {% if inputs and inputs.mode == 'generate' %}checked{% endif %}
+              />
+              Generate
+            </label>
+          </div>
+
+          <div class="field-group" data-field="original">
+            <label for="original_prompt">Original prompt</label>
+            <textarea
+              id="original_prompt"
+              name="original_prompt"
+              placeholder="Paste the prompt you want to improve"
+            >{% if inputs %}{{ inputs.original_prompt }}{% endif %}</textarea>
+          </div>
+
+          <div class="field-group field-group--stack" data-field="goal">
+            <label for="goal">Goal</label>
+            <textarea
+              id="goal"
+              name="goal"
+              placeholder="Describe the outcome you want"
+            >{% if inputs %}{{ inputs.goal }}{% endif %}</textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="audience">Audience</label>
+              <input
+                id="audience"
+                name="audience"
+                type="text"
+                placeholder="General users"
+                value="{% if inputs %}{{ inputs.audience }}{% endif %}"
+              />
+            </div>
+            <div class="field-group">
+              <label for="tone">Tone</label>
+              <select id="tone" name="tone">
+                <option value="neutral" {% if inputs and inputs.tone == 'neutral' %}selected{% endif %}>Neutral</option>
+                <option value="friendly" {% if inputs and inputs.tone == 'friendly' %}selected{% endif %}>Friendly</option>
+                <option value="professional" {% if inputs and inputs.tone == 'professional' %}selected{% endif %}>Professional</option>
+                <option value="playful" {% if inputs and inputs.tone == 'playful' %}selected{% endif %}>Playful</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="constraints">Constraints (optional)</label>
+            <textarea
+              id="constraints"
+              name="constraints"
+              placeholder="Example: Avoid technical jargon, include 3 examples"
+            >{% if inputs %}{{ inputs.constraints }}{% endif %}</textarea>
+          </div>
+
+          <button class="primary" type="submit">Generate prompt</button>
+        </form>
+
+        <div class="tool__result">
+          <div class="result__header">
+            <div>
+              <p class="result__title">Refined prompt</p>
+              <p class="result__meta">
+                {% if timestamp %}Generated {{ timestamp }}{% else %}Ready when you are{% endif %}
+              </p>
+            </div>
+            <button class="ghost" type="button" data-copy>Copy</button>
+          </div>
+
+          <pre class="result__output" data-output>{% if result %}{{ result }}{% else %}Your refined prompt will appear here.
+
+Tip: Add a goal or paste an existing prompt to get started.{% endif %}</pre>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const modeInputs = document.querySelectorAll('input[name="mode"]');
+      const originalField = document.querySelector('[data-field="original"]');
+      const goalField = document.querySelector('[data-field="goal"]');
+      const copyButton = document.querySelector('[data-copy]');
+      const output = document.querySelector('[data-output]');
+
+      const updateMode = () => {
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        if (mode === 'refine') {
+          originalField.style.display = 'block';
+          goalField.style.display = 'none';
+        } else {
+          originalField.style.display = 'none';
+          goalField.style.display = 'block';
+        }
+      };
+
+      modeInputs.forEach((input) => input.addEventListener('change', updateMode));
+      updateMode();
+
+      copyButton.addEventListener('click', async () => {
+        if (!output.textContent) return;
+        await navigator.clipboard.writeText(output.textContent.trim());
+        copyButton.textContent = 'Copied';
+        setTimeout(() => {
+          copyButton.textContent = 'Copy';
+        }, 1500);
+      });
+    </script>
+  </body>
+</html>
