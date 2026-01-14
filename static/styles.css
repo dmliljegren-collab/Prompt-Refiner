@@ -95,11 +95,50 @@ h1 {
 }
 
 .mode-switch label {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   cursor: pointer;
+  padding: 8px 14px 8px 34px;
+  border-radius: 999px;
+  color: #49515c;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.mode-switch span {
+  position: relative;
+}
+
+.mode-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mode-switch span::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #c8cfd8;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(10, 132, 255, 0);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mode-switch input:checked + span {
+  color: #1b1d22;
+}
+
+.mode-switch input:checked + span::before {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.12);
 }
 
 .field-group {
